@@ -71,4 +71,4 @@ cscope.*
 /onenand_ipl/board/*/onenand*
 /onenand_ipl/board/*/*.S
 
-#*#
+#*
