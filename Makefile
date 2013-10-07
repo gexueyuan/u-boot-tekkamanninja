@@ -87,21 +87,21 @@ endif
 #
 
 ifdef O
-ifeq ("$(origin O)", "command line")
+ifeq ("$(origin O)", "command line")  #origin函数用来查询变量的来源，这里用来判断O是不是来自命令行
 BUILD_DIR := $(O)
 endif
 endif
 
 ifneq ($(BUILD_DIR),)
-saved-output := $(BUILD_DIR)
+saved-output := $(BUILD_DIR)  #BUILD_DIR的值如果不等于空，那么将值保存在saved-output变量中
 
 # Attempt to create a output directory.
-$(shell [ -d ${BUILD_DIR} ] || mkdir -p ${BUILD_DIR})
+$(shell [ -d ${BUILD_DIR} ] || mkdir -p ${BUILD_DIR}) #如果BUILD_DIR不存在，那么建立他
 
 # Verify if it was successful.
 BUILD_DIR := $(shell cd $(BUILD_DIR) && /bin/pwd)
 $(if $(BUILD_DIR),,$(error output directory "$(saved-output)" does not exist))
-endif # ifneq ($(BUILD_DIR),)
+endif # ifneq ($(BUILD_DIR),) #这里用的if函数，build_dir如果存在，执行空指令，不存在，输出错误
 
 OBJTREE		:= $(if $(BUILD_DIR),$(BUILD_DIR),$(CURDIR))
 SRCTREE		:= $(CURDIR)
@@ -143,21 +143,21 @@ SUBDIRS	= tools \
 .PHONY : $(SUBDIRS) $(VERSION_FILE)
 
 ifeq ($(obj)include/config.mk,$(wildcard $(obj)include/config.mk))
-
+#wildcard 展开include目录下的congfig.mk,如果不存在就返回空，ifeq ($(FILE),$(wildcard $(FILE)))……endif是makefile中经常用来判断文件是否存在的句式
 # Include autoconf.mk before config.mk so that the config options are available
 # to all top level build files.  We need the dummy all: target to prevent the
 # dependency target in autoconf.mk.dep from being the default.
 all:
-sinclude $(obj)include/autoconf.mk.dep
+sinclude $(obj)include/autoconf.mk.dep #sinclude和-include是一样的,前者如果后面的文件不存在也不会报错，会忽略错误继续编译，后者就回报错，停止编译
 sinclude $(obj)include/autoconf.mk
 
 # load ARCH, BOARD, and CPU configuration
-include $(obj)include/config.mk
+include $(obj)include/config.mk #这就是make xxx_config生成的文件
 export	ARCH CPU BOARD VENDOR SOC
 
 # set default to nothing for native builds
 ifeq ($(HOSTARCH),$(ARCH))
-CROSS_COMPILE ?=
+CROSS_COMPILE ?= arm-linux-
 endif
 
 # load other configuration
@@ -175,7 +175,7 @@ ifndef LDSCRIPT
 	endif
 endif
 
-ifndef LDSCRIPT
+ifndef LDSCRIPT           #TOPDIR BOARDDIR CPUDIR都是在根目录的config.mk中定义的
 	ifeq ($(CONFIG_NAND_U_BOOT),y)
 		LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot-nand.lds
 		ifeq ($(wildcard $(LDSCRIPT)),)
@@ -208,7 +208,7 @@ ifeq ($(CPU),mpc85xx)
 OBJS += $(CPUDIR)/resetvec.o
 endif
 
-OBJS := $(addprefix $(obj),$(OBJS))
+OBJS := $(addprefix $(obj),$(OBJS)) #将obi放在OBJS前面，就是把所有的文件都加上路径名
 
 LIBS  = lib/libgeneric.o
 LIBS += lib/lzma/liblzma.o
@@ -1061,7 +1061,7 @@ mini6410_config :	unconfig
 	else										\
 		echo "RAM_TEXT = 0xc7e00000" >> $(obj)board/samsung/mini6410/config.tmp;\
 	fi
-	@$(MKCONFIG) mini6410 arm arm1176 mini6410 samsung s3c64xx
+	@$(MKCONFIG) mini6410 arm arm1176 mini6410 samsung s3c64xx  #MKCONFIG在112行导出宏定义，后面6个参数，传递给mkconfig
 	@echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk
 	@echo "CONFIG_MMC_U_BOOT = y" >> $(obj)include/config.mk
 

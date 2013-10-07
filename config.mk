@@ -63,7 +63,7 @@ HOSTSTRIP	= strip
 # -multiply_defined suppress option to turn off this error.
 #
 
-ifeq ($(HOSTOS),darwin)
+ifeq ($(HOSTOS),darwin) #macosx
 # get major and minor product version (e.g. '10' and '6' for Snow Leopard)
 DARWIN_MAJOR_VERSION	= $(shell sw_vers -productVersion | cut -f 1 -d '.')
 DARWIN_MINOR_VERSION	= $(shell sw_vers -productVersion | cut -f 2 -d '.')
@@ -79,7 +79,7 @@ else
 HOSTCC		= gcc
 endif
 
-ifeq ($(HOSTOS),cygwin)
+ifeq ($(HOSTOS),cygwin) #unix模拟
 HOSTCFLAGS	+= -ansi
 endif
 
@@ -99,7 +99,7 @@ cc-option = $(shell if $(CC) $(CFLAGS) $(1) -S -o /dev/null -xc /dev/null \
 		> /dev/null 2>&1; then echo "$(1)"; else echo "$(2)"; fi ;)
 
 #
-# Include the make variables (CC, etc...)
+# Include the make variables (CC, etc...) #这里就是make CROSS_COMPILE=xxx生效的地方，
 #
 AS	= $(CROSS_COMPILE)as
 LD	= $(CROSS_COMPILE)ld
@@ -126,7 +126,7 @@ sinclude $(OBJTREE)/include/config.mk
 CPUDIR=arch/$(ARCH)/cpu/$(CPU)
 ifneq ($(SRCTREE)/$(CPUDIR),$(wildcard $(SRCTREE)/$(CPUDIR)))
 CPUDIR=arch/$(ARCH)/cpu
-endif
+endif #检测是否存在cpudir这个目录
 
 sinclude $(TOPDIR)/arch/$(ARCH)/config.mk	# include architecture dependend rules
 sinclude $(TOPDIR)/$(CPUDIR)/config.mk		# include  CPU	specific rules

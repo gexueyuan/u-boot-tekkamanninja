@@ -31,7 +31,7 @@ if [ \( $# -eq 2 \) -a \( "$1" = "-A" \) ] ; then
 	[ $# = 3 ] && set ${line} ${1}
 fi
 
-while [ $# -gt 0 ] ; do
+while [ $# -gt 0 ] ; do # $#是脚本传递的参数的个数 -gt是>的意思 $1代表第一个参数
 	case "$1" in
 	--) shift ; break ;;
 	-a) shift ; APPEND=yes ;;
@@ -39,25 +39,25 @@ while [ $# -gt 0 ] ; do
 	-t) shift ; TARGETS="`echo $1 | sed 's:_: :g'` ${TARGETS}" ; shift ;;
 	*)  break ;;
 	esac
-done
+done #检查参数中有没有-a -n -t这样的参数
 
-[ $# -lt 4 ] && exit 1
-[ $# -gt 7 ] && exit 1
+[ $# -lt 4 ] && exit 1 #参数个数少于4个，退出
+[ $# -gt 7 ] && exit 1 #参数个数大于7个，退出
 
 # Strip all options and/or _config suffixes
-CONFIG_NAME="${1%_config}"
+CONFIG_NAME="${1%_config}"   #CONFIG_NAME=mini6410
 
-[ "${BOARD_NAME}" ] || BOARD_NAME="${1%_config}"
+[ "${BOARD_NAME}" ] || BOARD_NAME="${1%_config}"  #如果没定义BOARD_NAME,那么将mini6410赋值给他
 
-arch="$2"
-cpu="$3"
+arch="$2"  #arch=arm
+cpu="$3"   #cpu=arm1176
 if [ "$4" = "-" ] ; then
 	board=${BOARD_NAME}
 else
-	board="$4"
+	board="$4"  #board=mini6410
 fi
-[ $# -gt 4 ] && [ "$5" != "-" ] && vendor="$5"
-[ $# -gt 5 ] && [ "$6" != "-" ] && soc="$6"
+[ $# -gt 4 ] && [ "$5" != "-" ] && vendor="$5" #参数个数多于4个并且第5个参数不是-，那么vendor=samsung
+[ $# -gt 5 ] && [ "$6" != "-" ] && soc="$6"   #参数个数多于5个并且第六个不是-，那么soc = s3c64xx
 [ $# -gt 6 ] && [ "$7" != "-" ] && {
 	# check if we have a board config name in the options field
 	# the options field mave have a board config name and a list
@@ -74,9 +74,9 @@ fi
 		options=${7#*:}
 		TARGETS="`echo ${options} | sed 's:,: :g'` ${TARGETS}"
 	fi
-}
+} #从第七个参数取得设置config_name，在这里没有取得值
 
-if [ "${ARCH}" -a "${ARCH}" != "${arch}" ]; then
+if [ "${ARCH}" -a "${ARCH}" != "${arch}" ]; then  #ARCH是make命令时传入的参数，没有传入参数，那么ARCH=arch=arm
 	echo "Failed: \$ARCH=${ARCH}, should be '${arch}' for ${BOARD_NAME}" 1>&2
 	exit 1
 fi
@@ -90,7 +90,7 @@ fi
 #
 # Create link to architecture specific headers
 #
-if [ "$SRCTREE" != "$OBJTREE" ] ; then
+if [ "$SRCTREE" != "$OBJTREE" ] ; then  #源代码目录和目标目录不同时，要建立几个文件夹
 	mkdir -p ${OBJTREE}/include
 	mkdir -p ${OBJTREE}/include2
 	cd ${OBJTREE}/include2
@@ -119,7 +119,7 @@ if [ "${arch}" = "arm" ] ; then
 fi
 
 #
-# Create include file for Make
+# Create include file for Make  创建config.mk,前面已经进入下一级目录，所以是在根目录的./include目录里面建立
 #
 echo "ARCH   = ${arch}"  >  config.mk
 echo "CPU    = ${cpu}"   >> config.mk
@@ -137,7 +137,7 @@ else
 fi
 
 #
-# Create board specific header file
+# Create board specific header file 在./include中建立config.h文件
 #
 if [ "$APPEND" = "yes" ]	# Append to existing config file
 then

@@ -28,7 +28,7 @@
 #
 
 CONFIG_NAND_SPL	= y
-#CONFIG_BOOT_AUTODETECT = y
+CONFIG_BOOT_AUTODETECT = y
 
 include $(TOPDIR)/config.mk
 include $(TOPDIR)/nand_spl/board/$(BOARDDIR)/config.mk
